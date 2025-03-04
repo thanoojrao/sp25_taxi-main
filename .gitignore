@@ -179,4 +179,3 @@ pyrightconfig.json
 
 .env
 data/*
-models/*
