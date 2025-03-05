@@ -277,15 +277,52 @@ with st.spinner(text="Plot predicted rides demand"):
     st.sidebar.write("Finished plotting taxi rides demand")
     progress_bar.progress(4 / N_STEPS)
 
+# st.dataframe(predictions.sort_values("predicted_demand", ascending=False).head(10))
+# top10 = (
+#     predictions.sort_values("predicted_demand", ascending=False)
+#     .head(10)["pickup_location_id"]
+#     .to_list()
+# )
+# for location_id in top10:
+#     fig = plot_prediction(
+#         features=features[features["pickup_location_id"] == location_id],
+#         prediction=predictions[predictions["pickup_location_id"] == location_id],
+#     )
+#     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    
+# Load lookup table
+lookup_table = pd.read_csv('data/locations/taxi_zone_lookup.csv', usecols=["LocationID", "Zone"])
+
+# Merge predictions with lookup table to get location name
+predictions = pd.merge(predictions, lookup_table, left_on="pickup_location_id", right_on="LocationID", how="left")
+predictions.drop(columns=["LocationID"], inplace=True)
+
 st.dataframe(predictions.sort_values("predicted_demand", ascending=False).head(10))
+
 top10 = (
     predictions.sort_values("predicted_demand", ascending=False)
     .head(10)["pickup_location_id"]
     .to_list()
 )
+
 for location_id in top10:
     fig = plot_prediction(
         features=features[features["pickup_location_id"] == location_id],
         prediction=predictions[predictions["pickup_location_id"] == location_id],
     )
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+ 
+unique_zones = predictions["Zone"].unique().tolist()
+selected_zone = st.selectbox("Select Zone", ["All Zones"] + unique_zones)
+
+# Plot predictions for selected zone
+if selected_zone != "All Zones":
+    zone_predictions = predictions[predictions["Zone"] == selected_zone]
+    zone_location_ids = zone_predictions["pickup_location_id"].to_list()
+
+    for location_id in zone_location_ids:
+        fig = plot_prediction(
+            features=features[features["pickup_location_id"] == location_id],
+            prediction=predictions[predictions["pickup_location_id"] == location_id],
+        )
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
