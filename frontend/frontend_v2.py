@@ -12,6 +12,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests
+import pytz
 import streamlit as st
 from branca.colormap import LinearColormap
 from streamlit_folium import st_folium
@@ -215,9 +216,12 @@ def load_shape_data_file(
 
 # st.set_page_config(layout="wide")
 
-current_date = pd.Timestamp.now(tz="Etc/UTC")
+#current_date = pd.Timestamp.now(tz="Etc/UTC")
+nyc_tz = pytz.timezone("America/New_York")
+#st.header(f'{current_date.strftime("%Y-%m-%d %H:%M:%S")}')
+current_date = pd.Timestamp.now(tz="UTC").tz_convert(nyc_tz)
 st.title(f"New York Yellow Taxi Cab Demand Next Hour")
-st.header(f'{current_date.strftime("%Y-%m-%d %H:%M:%S")}')
+st.header(f'{current_date.strftime("%Y-%m-%d %H:%M:%S")} NYC Time')
 
 progress_bar = st.sidebar.header("Working Progress")
 progress_bar = st.sidebar.progress(0)
