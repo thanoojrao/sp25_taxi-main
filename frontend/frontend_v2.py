@@ -295,7 +295,7 @@ with st.spinner(text="Plot predicted rides demand"):
 #     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
 # Load lookup table
-lookup_table = pd.read_csv('data/locations/taxi_zone_lookup.csv', usecols=["LocationID", "Zone"])
+lookup_table = pd.read_csv('locations_data/taxi_zone_lookup.csv', usecols=["LocationID", "Zone"])
 
 # Merge predictions with lookup table to get location name
 predictions = pd.merge(predictions, lookup_table, left_on="pickup_location_id", right_on="LocationID", how="left")
